@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Bookshelf from "./Bookshelf";
 import "./App.css";
 import ScrollButton from "./ScrollButton";
+import SideBar from "./SideBar";
 
 const BOOKS_PER_PAGE = 8;
 const PLACEHOLDER_IMAGE_URL =
@@ -12,6 +13,7 @@ function App() {
   const [offset, setOffset] = useState(0);
   const [prefetchedBooks, setPrefetchedBooks] = useState({});
   const [loading, setLoading] = useState(false);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
   const fetchBooks = async (currentOffset) => {
     if (prefetchedBooks[currentOffset]) {
@@ -90,7 +92,9 @@ function App() {
     fetchBooks(nextOffset);
 
     // *** SCROLL TO TOP ON NEXT PAGE ***
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 100);
 
     prefetchNextPage(nextOffset + BOOKS_PER_PAGE);
     prefetchNextPage(nextOffset + BOOKS_PER_PAGE * 2);
@@ -103,7 +107,9 @@ function App() {
     if (prevOffset >= 0) {
       setOffset(prevOffset);
       fetchBooks(prevOffset);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 100);
     }
   };
 
@@ -151,8 +157,49 @@ function App() {
     margin: "24px 0",
   };
 
+  const handleSearch = (searchTerm) => {
+    console.log("Searching for:", searchTerm);
+    // Implement your search logic here
+    // You might want to update the fetchBooks function to include search parameters
+  };
+
+  // Rest of your code remains the same
+  // ...
+
+  // Mobile sidebar toggle
+  const toggleSidebar = () => {
+    setShowMobileSidebar(!showMobileSidebar);
+  };
+
   return (
     <>
+      <button
+        className="sidebar-toggle"
+        onClick={toggleSidebar}
+        style={{ display: window.innerWidth <= 768 ? "block" : "none" }}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      {/* Sidebar component */}
+      <SideBar
+        onSearch={handleSearch}
+        className={showMobileSidebar ? "active" : ""}
+      />
       <Bookshelf items={statItems} shelfType="stats" />
       {upperRowBooks.length > 0 && (
         <Bookshelf items={upperRowBooks} shelfType="books" />
