@@ -3,6 +3,7 @@ import Bookshelf from "./Bookshelf";
 import "./App.css";
 import ScrollButton from "./ScrollButton";
 import SideBar from "./SideBar";
+import Spinner from "./Spinner";
 
 const BOOKS_PER_PAGE = 8;
 const MAX_BOOKS_TO_FETCH = 100;
@@ -271,58 +272,54 @@ function App() {
           <line x1="3" y1="18" x2="21" y2="18"></line>
         </svg>
       </button>
-
       <SideBar
         onSearch={handleSearch}
         onChangeCategory={handleCategoryChange}
         className={showMobileSidebar ? "active" : ""}
       />
-
       <div className="main-content">
-        <Bookshelf items={state.statItems} shelfType="stats" />
-
-        {upperRowBooks.length > 0 && (
-          <Bookshelf items={upperRowBooks} shelfType="books" />
+        {state.isLoading ? (
+          <Spinner />
+        ) : (
+          <>
+            <Bookshelf items={state.statItems} shelfType="stats" />
+            {upperRowBooks.length > 0 && (
+              <Bookshelf items={upperRowBooks} shelfType="books" />
+            )}
+            {lowerRowBooks.length > 0 && (
+              <Bookshelf items={lowerRowBooks} shelfType="books" />
+            )}
+            {state.currentBooks.length === 0 && !state.isLoading && (
+              <p style={{ textAlign: "center", margin: "20px" }}>
+                {state.searchTerm
+                  ? `No results found for "${state.searchTerm}".`
+                  : "No books to display on this page."}
+              </p>
+            )}
+            <div className="pagination">
+              <ScrollButton
+                direction="left"
+                onClick={goToPreviousPage}
+                disabled={state.offset === 0 || state.isLoading}
+              />
+              <ScrollButton
+                direction="right"
+                onClick={goToNextPage}
+                disabled={
+                  state.isLoading ||
+                  state.offset + BOOKS_PER_PAGE >=
+                    (state.searchTerm
+                      ? state.allBooks.filter((book) =>
+                          book.title
+                            .toLowerCase()
+                            .includes(state.searchTerm.toLowerCase())
+                        ).length
+                      : state.allBooks.length)
+                }
+              />
+            </div>
+          </>
         )}
-
-        {lowerRowBooks.length > 0 && (
-          <Bookshelf items={lowerRowBooks} shelfType="books" />
-        )}
-
-        {state.currentBooks.length === 0 && !state.isLoading && (
-          <p style={{ textAlign: "center", margin: "20px" }}>
-            {state.searchTerm
-              ? `No results found for "${state.searchTerm}".`
-              : "No books to display on this page."}
-          </p>
-        )}
-
-        {state.isLoading && (
-          <p style={{ textAlign: "center", margin: "20px" }}>Loading...</p>
-        )}
-
-        <div className="pagination">
-          <ScrollButton
-            direction="left"
-            onClick={goToPreviousPage}
-            disabled={state.offset === 0 || state.isLoading}
-          />
-          <ScrollButton
-            direction="right"
-            onClick={goToNextPage}
-            disabled={
-              state.isLoading ||
-              state.offset + BOOKS_PER_PAGE >=
-                (state.searchTerm
-                  ? state.allBooks.filter((book) =>
-                      book.title
-                        .toLowerCase()
-                        .includes(state.searchTerm.toLowerCase())
-                    ).length
-                  : state.allBooks.length)
-            }
-          />
-        </div>
       </div>
     </>
   );
