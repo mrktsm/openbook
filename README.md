@@ -33,10 +33,8 @@ The following **required** functionality is completed:
 
 The following **optional** features are implemented:
 
-- [] Multiple filters can be applied simultaneously
-- [] Filters use different input types
+- [x] Filters use different input types
   - e.g., as a text input, a dropdown or radio selection, and/or a slider
-- [ ] The user can enter specific bounds for filter values
 
 The following **additional** features are implemented:
 
@@ -49,7 +47,7 @@ Describe any challenges encountered while building the app.
 
 ## License
 
-    Copyright [yyyy] [name of copyright owner]
+    Copyright 2025 Marko Tsymbaliuk
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
