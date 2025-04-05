@@ -4,19 +4,20 @@ import "./App.css"; // Import the CSS
 
 function App() {
   const [books, setBooks] = useState([]);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
-    fetchBooks();
-  }, []);
+    fetchBooks(page);
+  }, [page]);
 
   // Fetch books from the Open Library API
-  const fetchBooks = async () => {
+  const fetchBooks = async (pageNum) => {
     const response = await fetch(
-      "https://openlibrary.org/subjects/fantasy.json?limit=8"
+      `https://openlibrary.org/subjects/love.json?limit=4&page=${pageNum}`
     );
     const data = await response.json();
     console.log(data);
-    return data;
+    setBooks(data.works || []);
   };
 
   const statItems = [
@@ -43,33 +44,23 @@ function App() {
     },
   ];
 
-  const bookItems = [
-    {
-      type: "book",
-      imageURL: "https://unsplash.it/300/450?image=1067",
-      id: "b1",
-    },
-    {
-      type: "book",
-      imageURL: "https://unsplash.it/300/450?image=10",
-      id: "b2",
-    },
-    {
-      type: "book",
-      imageURL: "https://unsplash.it/300/450?image=24",
-      id: "b3",
-    },
-    {
-      type: "book",
-      imageURL: "https://unsplash.it/300/450?image=35",
-      id: "b4",
-    },
-  ];
+  const bookItems = books.map((book) => ({
+    type: "book",
+    imageURL: `https://covers.openlibrary.org/b/id/${book.cover_id}-M.jpg`,
+    title: book.title,
+    id: book.key,
+  }));
 
   return (
     <>
       <Bookshelf items={statItems} shelfType="stats" />
       <Bookshelf items={bookItems} shelfType="books" />
+      <div className="pagination">
+        <button onClick={() => setPage(page - 1)} disabled={page === 1}>
+          Previous
+        </button>
+        <button onClick={() => setPage(page + 1)}>Next</button>
+      </div>
     </>
   );
 }
