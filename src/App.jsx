@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import Bookshelf from "./Bookshelf";
+import Bookshelf from "./components/Bookshelf";
 import "./App.css";
-import ScrollButton from "./ScrollButton";
-import SideBar from "./SideBar";
-import Spinner from "./Spinner";
+import ScrollButton from "./components/ui/ScrollButton";
+import SideBar from "./components/SideBar";
+import Spinner from "./components/ui/Spinner";
 
 const BOOKS_PER_PAGE = 8;
 const MAX_BOOKS_TO_FETCH = 100;
