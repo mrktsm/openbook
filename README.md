@@ -46,7 +46,9 @@ The following **optional** features are implemented:
 
 ## Notes
 
-Describe any challenges encountered while building the app.
+Challenges encountered while building the app:
+- Styling Consistency: Achieving a polished design with smooth animations, while maintaining performance, required careful use of CSS transitions and animations.
+- For this assignment, I needed to use the .filter() method to handle search functionality, which caused performance issues. Initially, my approach was to fetch data per page as needed, but to implement search, I had to fetch a large set of data and filter through it on the client side. This added overhead and slowed down the app. To address this, I optimized the performance by computing dynamic stats only once on initial load and improving the efficiency of the filtering process.
 
 ## License
 
