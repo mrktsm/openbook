@@ -20,7 +20,7 @@ The following **required** functionality is completed:
   - The dashboard should display at least 10 unique items, one per row
   - The dashboard includes at least two features in each row
 - [x] **`useEffect` React hook and `async`/`await` are used**
-- [ x **The app dashboard includes at least three summary statistics about the data** 
+- [x] **The app dashboard includes at least three summary statistics about the data** 
   - The app dashboard includes at least three summary statistics about the data, such as:
     - *insert details here*
 - [x] **A search bar allows the user to search for an item in the fetched data**
