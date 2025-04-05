@@ -9,110 +9,116 @@ const PLACEHOLDER_IMAGE_URL =
   "https://via.placeholder.com/128x192.png?text=No+Cover";
 
 function App() {
-  const [books, setBooks] = useState([]);
-  const [offset, setOffset] = useState(0);
-  const [prefetchedBooks, setPrefetchedBooks] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [state, setState] = useState({
+    currentBooks: [], // Books currently displayed
+    cachedBooks: {}, // Cached books by offset
+    offset: 0, // Current offset for pagination
+    category: "science", // Current category
+    isLoading: false, // Loading state
+  });
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
-  const fetchBooks = async (currentOffset) => {
-    if (prefetchedBooks[currentOffset]) {
-      setBooks(prefetchedBooks[currentOffset]);
-      setLoading(false);
-      return;
+  // Fetch books for a given offset and category
+  const fetchBooks = async (offset, category) => {
+    // Check cache first
+    if (state.cachedBooks[offset]) {
+      return state.cachedBooks[offset];
     }
 
-    setLoading(true);
     try {
       const response = await fetch(
-        `https://openlibrary.org/subjects/science.json?limit=${BOOKS_PER_PAGE}&offset=${currentOffset}`
+        `https://openlibrary.org/subjects/${category}.json?limit=${BOOKS_PER_PAGE}&offset=${offset}`
       );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      const newBooks = data.works || [];
-
-      setPrefetchedBooks((prev) => ({
-        ...prev,
-        [currentOffset]: newBooks,
-      }));
-
-      setBooks(newBooks);
+      return data.works || [];
     } catch (error) {
-      console.error("Failed to fetch books:", error);
-      setBooks([]);
-    } finally {
-      setLoading(false);
+      console.error(`Failed to fetch books for offset ${offset}:`, error);
+      return [];
     }
   };
 
-  // Initial load effect
+  // Update state with new books and cache
+  const updateBooks = (offset, books) => {
+    setState((prev) => ({
+      ...prev,
+      currentBooks: books,
+      cachedBooks: { ...prev.cachedBooks, [offset]: books },
+      offset,
+      isLoading: false,
+    }));
+  };
+
+  // Load books for the current offset and prefetch the next page
+  const loadPage = async (newOffset, newCategory) => {
+    setState((prev) => ({ ...prev, isLoading: true }));
+
+    const books = await fetchBooks(newOffset, newCategory);
+    updateBooks(newOffset, books);
+
+    // Prefetch the next page
+    const nextOffset = newOffset + BOOKS_PER_PAGE;
+    if (!state.cachedBooks[nextOffset]) {
+      const nextBooks = await fetchBooks(nextOffset, newCategory);
+      setState((prev) => ({
+        ...prev,
+        cachedBooks: { ...prev.cachedBooks, [nextOffset]: nextBooks },
+      }));
+    }
+  };
+
+  // Handle category change
+  const handleCategoryChange = (newCategory) => {
+    setState((prev) => ({
+      ...prev,
+      category: newCategory,
+      offset: 0,
+      currentBooks: [],
+      cachedBooks: {}, // Reset cache on category change
+    }));
+  };
+
+  // Initial load and category change effect
   useEffect(() => {
-    fetchBooks(0);
-  }, []);
+    loadPage(0, state.category);
+  }, [state.category]);
 
-  const prefetchNextPage = (nextOffset) => {
-    // Only prefetch if not already cached and offset is valid
-    if (!prefetchedBooks[nextOffset] && nextOffset >= 0) {
-      fetch(
-        `https://openlibrary.org/subjects/science.json?limit=${BOOKS_PER_PAGE}&offset=${nextOffset}`
-      )
-        .then((response) => {
-          if (!response.ok) {
-            console.warn(
-              `Prefetch HTTP error! status: ${response.status} for offset ${nextOffset}`
-            );
-            return null;
-          }
-          return response.json();
-        })
-        .then((data) => {
-          if (data) {
-            const fetchedBooks = data.works || [];
-            if (fetchedBooks.length > 0) {
-              setPrefetchedBooks((prev) => ({
-                ...prev,
-                [nextOffset]: fetchedBooks,
-              }));
-            }
-          }
-        })
-        .catch((error) => {
-          console.error(`Prefetch error for offset ${nextOffset}:`, error);
-        });
-    }
-  };
-
+  // Navigation handlers
   const goToNextPage = () => {
-    if (loading) return;
-
-    const nextOffset = offset + BOOKS_PER_PAGE;
-    setOffset(nextOffset);
-    fetchBooks(nextOffset);
-
-    // *** SCROLL TO TOP ON NEXT PAGE ***
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }, 100);
-
-    prefetchNextPage(nextOffset + BOOKS_PER_PAGE);
-    prefetchNextPage(nextOffset + BOOKS_PER_PAGE * 2);
+    if (state.isLoading) return;
+    const nextOffset = state.offset + BOOKS_PER_PAGE;
+    loadPage(nextOffset, state.category);
+    scrollToTop();
   };
 
   const goToPreviousPage = () => {
-    if (loading) return;
-
-    const prevOffset = offset - BOOKS_PER_PAGE;
-    if (prevOffset >= 0) {
-      setOffset(prevOffset);
-      fetchBooks(prevOffset);
-      setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }, 100);
-    }
+    if (state.isLoading || state.offset === 0) return;
+    const prevOffset = state.offset - BOOKS_PER_PAGE;
+    loadPage(prevOffset, state.category);
+    scrollToTop();
   };
 
+  // Utility to scroll to top
+  const scrollToTop = () => {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 100);
+  };
+
+  // Search handler (placeholder)
+  const handleSearch = (searchTerm) => {
+    console.log("Searching for:", searchTerm);
+    // Add search logic here if needed
+  };
+
+  // Toggle mobile sidebar
+  const toggleSidebar = () => {
+    setShowMobileSidebar((prev) => !prev);
+  };
+
+  // Static stat items
   const statItems = [
     {
       type: "stat",
@@ -137,7 +143,8 @@ function App() {
     },
   ];
 
-  const bookItems = books.map((book) => ({
+  // Transform books into display items
+  const bookItems = state.currentBooks.map((book) => ({
     type: "book",
     imageURL: book.cover_id
       ? `https://covers.openlibrary.org/b/id/${book.cover_id}-M.jpg`
@@ -147,29 +154,7 @@ function App() {
   }));
 
   const upperRowBooks = bookItems.slice(0, BOOKS_PER_PAGE / 2);
-  const lowerRowBooks = bookItems.slice(BOOKS_PER_PAGE / 2, BOOKS_PER_PAGE);
-
-  const paginationStyle = {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: "16px",
-    margin: "24px 0",
-  };
-
-  const handleSearch = (searchTerm) => {
-    console.log("Searching for:", searchTerm);
-    // Implement your search logic here
-    // You might want to update the fetchBooks function to include search parameters
-  };
-
-  // Rest of your code remains the same
-  // ...
-
-  // Mobile sidebar toggle
-  const toggleSidebar = () => {
-    setShowMobileSidebar(!showMobileSidebar);
-  };
+  const lowerRowBooks = bookItems.slice(BOOKS_PER_PAGE / 2);
 
   return (
     <>
@@ -195,13 +180,12 @@ function App() {
         </svg>
       </button>
 
-      {/* Sidebar component */}
       <SideBar
         onSearch={handleSearch}
+        onChangeCategory={handleCategoryChange}
         className={showMobileSidebar ? "active" : ""}
       />
 
-      {/* Wrap all content in main-content div */}
       <div className="main-content">
         <Bookshelf items={statItems} shelfType="stats" />
 
@@ -213,7 +197,7 @@ function App() {
           <Bookshelf items={lowerRowBooks} shelfType="books" />
         )}
 
-        {books.length === 0 && !loading && (
+        {state.currentBooks.length === 0 && !state.isLoading && (
           <p style={{ textAlign: "center", margin: "20px" }}>
             No books to display on this page.
           </p>
@@ -223,12 +207,12 @@ function App() {
           <ScrollButton
             direction="left"
             onClick={goToPreviousPage}
-            disabled={offset === 0 || loading}
+            disabled={state.offset === 0 || state.isLoading}
           />
           <ScrollButton
             direction="right"
             onClick={goToNextPage}
-            disabled={loading}
+            disabled={state.isLoading}
           />
         </div>
       </div>

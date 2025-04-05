@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const SideBar = ({ onSearch, className }) => {
+const SideBar = ({ onSearch, className, onChangeCategory }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("science");
 
@@ -8,10 +8,7 @@ const SideBar = ({ onSearch, className }) => {
   const categories = [
     { value: "science", label: "Science" },
     { value: "fiction", label: "Fiction" },
-    { value: "fantasy", label: "Fantasy" },
-    { value: "mystery", label: "Mystery" },
     { value: "biography", label: "Biography" },
-    { value: "history", label: "History" },
   ];
 
   const handleSearchChange = (e) => {
@@ -27,7 +24,7 @@ const SideBar = ({ onSearch, className }) => {
 
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
-    // Add category filter functionality here
+    onChangeCategory(category);
   };
 
   return (
