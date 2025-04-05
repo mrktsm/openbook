@@ -1,32 +1,208 @@
-.app {
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f9f9f9;
-}
-
-/* Reset some defaults */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Add some global defaults */
-html,
+/* General Body Styles */
 body {
-  height: 100%;
-  width: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  display: flex;
+  flex-direction: column; /* Stack shelves vertically */
+  align-items: center;
+  min-height: 100vh; /* Ensure it takes full viewport height */
+  justify-content: flex-start; /* Start content from top */
+  position: relative;
+  padding: 80px 30px; /* Keep existing padding */
+  box-sizing: border-box;
+  background-color: #f0f2f5; /* Optional: Light background for contrast */
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
-/* Add a subtle texture to the background */
+/* --- Bookshelf Base Styles --- */
+.bookshelf {
+  /* Shelf structure */
+  max-width: 1400px; /* <<< LONGER SHELF */
+  width: 95%; /* Keep relative width */
+  margin-bottom: 150px; /* Keep space between shelves */
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+  z-index: 2; /* Shelf structure above items' shadow */
+  position: relative;
+  height: 0; /* Structure is built with borders/pseudo-elements */
+  box-sizing: border-box;
+  border-bottom: 25px solid #e8e8e8; /* Keep thickness */
+  border-left: 30px solid transparent;
+  border-right: 30px solid transparent;
+  pointer-events: all; /* Allow interaction with shelf items */
+}
 
-/* Make sure the app fills the screen */
-#root {
-  height: 100%;
+/* --- ADDED: Margin top for the first shelf --- */
+.bookshelf:first-of-type {
+  margin-top: 50px; /* Add space above the very first shelf */
+}
+
+/* Bookshelf front-side */
+.bookshelf::before {
+  content: "";
+  position: absolute;
+  top: 25px;
+  left: -30px;
+  background: linear-gradient(90deg, #f8f8f8 0%, #ffffff 100%);
+  height: 35px;
+  width: calc(100% + 60px);
+  box-shadow: 0px -1px 6px rgba(0, 0, 0, 0.05), 0px 4px 16px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+
+/* Bookshelf drop-shadow */
+.bookshelf::after {
+  content: "";
+  height: 90px;
+  width: calc(100% + 60px);
+  position: absolute;
+  top: 60px; /* (25px border + 35px front) */
+  left: -30px;
+  display: block;
+  background: linear-gradient(
+    180deg,
+    rgba(200, 200, 200, 0.6) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  clip-path: polygon(0% 0%, 100% 0%, 97% 100%, 3% 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* --- Container for Items on the Shelf --- */
+.books-container {
+  display: grid;
   width: 100%;
+  margin: auto;
+  /* Adjust pull distance slightly if needed based on visual */
+  transform: translateY(calc(-100% - 35px));
+  padding-bottom: 20px;
+  z-index: 3;
+  position: relative;
+  gap: 40px; /* Keep increased spacing */
+}
+
+/* Grid layout for STATS shelf */
+.books-container--stats {
+  grid-template-columns: repeat(3, 1fr); /* 3 items */
+}
+
+/* Grid layout for BOOKS shelf */
+.books-container--books {
+  grid-template-columns: repeat(4, 1fr); /* 4 items */
+}
+
+/* --- Book Styles --- */
+.book {
+  width: 100%; /* Takes full width of its grid column */
+  border-radius: 4px 1px 1px 4px;
+  aspect-ratio: 115 / 170; /* <<< ADJUSTED Aspect Ratio (less tall) */
+  /* This helps books fit better horizontally when grid columns get wide */
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease-out;
+}
+
+/* Book Cover */
+.book::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: var(--bg-image, linear-gradient(45deg, #cccccc, #eeeeee)) center
+    center / cover no-repeat;
+  border-radius: inherit;
+  box-shadow: inset 2px 0px 3px 1px rgba(0, 0, 0, 0.15),
+    0px 6px 12px rgba(0, 0, 0, 0.25);
+  transition: all 300ms ease-out;
+}
+
+/* Book Hover Glow/Shadow */
+.book::after {
+  content: "";
+  position: absolute;
+  top: -1%;
+  left: -1%;
+  width: 102%;
+  height: 102%;
+  background: var(--bg-image, #dddddd) center center / cover no-repeat;
+  filter: blur(18px) saturate(1.2);
+  z-index: -1;
+  opacity: 0;
+  border-radius: inherit;
+  transition: all 300ms ease-out;
+}
+
+/* Book Hover Effects */
+.book:hover {
+  transform: translateY(-20px) scale(1.05);
+}
+.book:hover::before {
+  box-shadow: inset 2px 0px 3px 1px rgba(0, 0, 0, 0.1),
+    0px 15px 25px rgba(0, 0, 0, 0.35);
+}
+.book:hover::after {
+  opacity: 0.7;
+}
+
+/* --- Stat Card Styles --- */
+.stat-card {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  padding: 25px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  color: #fff;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+
+  /* --- ADJUSTED Flip/Perspective --- */
+  transform-style: preserve-3d;
+  /* Reduced perspective distance, increased angle for more noticeable flip */
+  transform: perspective(500px) rotateY(20deg);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: -6px 5px 18px rgba(0, 0, 0, 0.25); /* Adjusted shadow */
+}
+
+.stat-card h3 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.stat-card p {
+  font-size: 1.1rem;
+  font-weight: 400;
+  margin: 0;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.stat-card:hover {
+  /* Straighten on Hover, keep slight scale */
+  transform: perspective(500px) rotateY(0deg) scale(1.03);
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+}
+
+/* Apple Music Style Gradients (Keep these as they were) */
+.stat-card.gradient-1 {
+  background-image: linear-gradient(135deg, #ff6b6b, #ff8e53);
+}
+
+.stat-card.gradient-2 {
+  background-image: linear-gradient(135deg, #67c7eb, #4facfe);
+}
+
+.stat-card.gradient-3 {
+  background-image: linear-gradient(135deg, #8fd3f4, #84fab0);
 }
