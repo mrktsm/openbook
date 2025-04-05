@@ -9,6 +9,12 @@ const SideBar = ({ onSearch, className, onChangeCategory }) => {
     { value: "science", label: "Science" },
     { value: "fiction", label: "Fiction" },
     { value: "biography", label: "Biography" },
+    { value: "history", label: "History" },
+    { value: "mystery", label: "Mystery" },
+    { value: "fantasy", label: "Fantasy" },
+    { value: "romance", label: "Romance" },
+    { value: "horror", label: "Horror" },
+    { value: "travel", label: "Travel" },
   ];
 
   const handleSearchChange = (e) => {
