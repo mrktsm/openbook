@@ -6,12 +6,12 @@ const SideBar = ({ onSearch, className }) => {
 
   // Categories with icons for Apple-like appearance
   const categories = [
-    { value: "science", label: "Science", icon: "📚" },
-    { value: "fiction", label: "Fiction", icon: "🖋️" },
-    { value: "fantasy", label: "Fantasy", icon: "🧙" },
-    { value: "mystery", label: "Mystery", icon: "🔍" },
-    { value: "biography", label: "Biography", icon: "👤" },
-    { value: "history", label: "History", icon: "🏛️" },
+    { value: "science", label: "Science" },
+    { value: "fiction", label: "Fiction" },
+    { value: "fantasy", label: "Fantasy" },
+    { value: "mystery", label: "Mystery" },
+    { value: "biography", label: "Biography" },
+    { value: "history", label: "History" },
   ];
 
   const handleSearchChange = (e) => {
@@ -74,7 +74,6 @@ const SideBar = ({ onSearch, className }) => {
                 }`}
                 onClick={() => handleCategoryChange(category.value)}
               >
-                <span className="category-icon">{category.icon}</span>
                 <span className="category-label">{category.label}</span>
               </li>
             ))}
@@ -86,15 +85,12 @@ const SideBar = ({ onSearch, className }) => {
           <h3>Quick Links</h3>
           <ul className="quick-links">
             <li className="quick-link-item">
-              <span className="quick-link-icon">⭐</span>
               <span className="quick-link-label">Featured</span>
             </li>
             <li className="quick-link-item">
-              <span className="quick-link-icon">📖</span>
               <span className="quick-link-label">Reading Now</span>
             </li>
             <li className="quick-link-item">
-              <span className="quick-link-icon">🔖</span>
               <span className="quick-link-label">Bookmarks</span>
             </li>
           </ul>
