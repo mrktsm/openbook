@@ -1,16 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Bookshelf from "./Bookshelf"; // Assuming Bookshelf.js is in the same folder
 import "./App.css"; // Import the CSS
 
 function App() {
-  // --- Data for the Stat Cards Shelf ---
+  const [books, setBooks] = useState([]);
+
+  useEffect(() => {
+    fetchBooks();
+  }, []);
+
+  // Fetch books from the Open Library API
+  const fetchBooks = async () => {
+    const response = await fetch(
+      "https://openlibrary.org/subjects/fantasy.json?limit=8"
+    );
+    const data = await response.json();
+    console.log(data);
+    return data;
+  };
+
   const statItems = [
     {
-      type: "stat", // Changed type to 'stat' for clarity
+      type: "stat",
       title: "Best Sellers",
       description: "This Month",
       id: "stat1",
-      gradientClass: "gradient-1", // Assign gradient class
+      gradientClass: "gradient-1",
     },
     {
       type: "stat",
@@ -28,10 +43,7 @@ function App() {
     },
   ];
 
-  // --- Data for the Books Shelf ---
   const bookItems = [
-    // Use actual image URLs or placeholders
-    // Placeholder images from unsplash.it
     {
       type: "book",
       imageURL: "https://unsplash.it/300/450?image=1067",
@@ -55,20 +67,9 @@ function App() {
   ];
 
   return (
-    // The body styling is now handled by App.css on the body tag directly
-    // No need for an extra div here unless you have other layout needs
     <>
-      {/* Bookshelf for Stats */}
-      <Bookshelf
-        items={statItems}
-        shelfType="stats" // Pass a type to differentiate
-      />
-
-      {/* Bookshelf for Books */}
-      <Bookshelf
-        items={bookItems}
-        shelfType="books" // Pass a type to differentiate
-      />
+      <Bookshelf items={statItems} shelfType="stats" />
+      <Bookshelf items={bookItems} shelfType="books" />
     </>
   );
 }

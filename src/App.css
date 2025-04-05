@@ -19,7 +19,7 @@ body {
   max-width: 1600px; /* Keep current max-width */
   width: 95%;
   /* --- MORE Space Between Shelves --- */
-  margin-bottom: 400px; /* <<< MUCH More space BELOW each shelf */
+  margin-bottom: 380px; /* <<< MUCH More space BELOW each shelf */
   display: flex;
   justify-content: center;
   flex-shrink: 0;
