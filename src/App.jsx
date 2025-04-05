@@ -200,31 +200,37 @@ function App() {
         onSearch={handleSearch}
         className={showMobileSidebar ? "active" : ""}
       />
-      <Bookshelf items={statItems} shelfType="stats" />
-      {upperRowBooks.length > 0 && (
-        <Bookshelf items={upperRowBooks} shelfType="books" />
-      )}
 
-      {lowerRowBooks.length > 0 && (
-        <Bookshelf items={lowerRowBooks} shelfType="books" />
-      )}
-      {books.length === 0 && !loading && (
-        <p style={{ textAlign: "center", margin: "20px" }}>
-          No books to display on this page.
-        </p>
-      )}
+      {/* Wrap all content in main-content div */}
+      <div className="main-content">
+        <Bookshelf items={statItems} shelfType="stats" />
 
-      <div style={paginationStyle} className="pagination">
-        <ScrollButton
-          direction="left"
-          onClick={goToPreviousPage}
-          disabled={offset === 0 || loading}
-        />
-        <ScrollButton
-          direction="right"
-          onClick={goToNextPage}
-          disabled={loading}
-        />
+        {upperRowBooks.length > 0 && (
+          <Bookshelf items={upperRowBooks} shelfType="books" />
+        )}
+
+        {lowerRowBooks.length > 0 && (
+          <Bookshelf items={lowerRowBooks} shelfType="books" />
+        )}
+
+        {books.length === 0 && !loading && (
+          <p style={{ textAlign: "center", margin: "20px" }}>
+            No books to display on this page.
+          </p>
+        )}
+
+        <div className="pagination">
+          <ScrollButton
+            direction="left"
+            onClick={goToPreviousPage}
+            disabled={offset === 0 || loading}
+          />
+          <ScrollButton
+            direction="right"
+            onClick={goToNextPage}
+            disabled={loading}
+          />
+        </div>
       </div>
     </>
   );
