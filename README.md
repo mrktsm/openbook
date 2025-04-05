@@ -2,9 +2,15 @@
 
 Submitted by: **Marko Tsymbaliuk**
 
-This web app: **insert description**
+This web app: **Open Book is a web application designed to help users discover and explore books through an intuitive, visually appealing interface. With features like category browsing, search functionality, and dynamic stats such as bestsellers and top authors, it offers a seamless and engaging experience. Inspired by the sleek design of Apple Music, Open Book provides smooth transitions and responsive design for an enjoyable browsing experience on both desktop and mobile devices.**
 
 Time spent: **6.5** hours spent in total
+
+## Video Walkthrough
+
+Here's a walkthrough of the implemented features:
+
+![Alt Text](docs/open-book-demo.gif)
 
 ## Required Features
 
@@ -36,18 +42,6 @@ The following **additional** features are implemented:
 
 * [ ] List anything else that you added to improve the site's functionality!
 
-## Video Walkthrough
-
-Here's a walkthrough of implemented user stories:
-
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
-
-<!-- Replace this with whatever GIF tool you used! -->
-GIF created with ...  
-<!-- Recommended tools:
-[Kap](https://getkap.co/) for macOS
-[ScreenToGif](https://www.screentogif.com/) for Windows
-[peek](https://github.com/phw/peek) for Linux. -->
 
 ## Notes
 
