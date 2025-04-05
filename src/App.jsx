@@ -1,66 +1,109 @@
 import React, { useEffect, useState } from "react";
-import Bookshelf from "./Bookshelf"; // Assuming Bookshelf.js is in the same folder
-import "./App.css"; // Import the CSS
+import Bookshelf from "./Bookshelf";
+import "./App.css";
+import ScrollButton from "./ScrollButton";
+
+const BOOKS_PER_PAGE = 8;
+const PLACEHOLDER_IMAGE_URL =
+  "https://via.placeholder.com/128x192.png?text=No+Cover";
 
 function App() {
   const [books, setBooks] = useState([]);
   const [offset, setOffset] = useState(0);
-  const [prefetchedBooks, setPrefetchedBooks] = useState({}); // Store prefetched pages here
+  const [prefetchedBooks, setPrefetchedBooks] = useState({});
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    // Load the first page initially
-    fetchBooks(offset);
-  }, []);
-
-  // Fetch books from the Open Library API
   const fetchBooks = async (currentOffset) => {
-    // Check if we have already prefetched this page
     if (prefetchedBooks[currentOffset]) {
       setBooks(prefetchedBooks[currentOffset]);
+      setLoading(false);
       return;
     }
 
-    const response = await fetch(
-      `https://openlibrary.org/subjects/science.json?limit=8&offset=${currentOffset}`
-    );
-    const data = await response.json();
-    const newBooks = data.works || [];
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `https://openlibrary.org/subjects/science.json?limit=${BOOKS_PER_PAGE}&offset=${currentOffset}`
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      const newBooks = data.works || [];
 
-    // Save fetched books to the prefetchedBooks cache
-    setPrefetchedBooks((prev) => ({
-      ...prev,
-      [currentOffset]: newBooks,
-    }));
+      setPrefetchedBooks((prev) => ({
+        ...prev,
+        [currentOffset]: newBooks,
+      }));
 
-    // Set the current page's books
-    setBooks(newBooks);
-  };
-
-  // Prefetch the next page of books (8 books)
-  const prefetchNextPage = (nextOffset) => {
-    // If this page is not already prefetched, fetch it
-    if (!prefetchedBooks[nextOffset]) {
-      fetchBooks(nextOffset);
+      setBooks(newBooks);
+    } catch (error) {
+      console.error("Failed to fetch books:", error);
+      setBooks([]);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Navigate to the next page
+  // Initial load effect
+  useEffect(() => {
+    fetchBooks(0);
+  }, []);
+
+  const prefetchNextPage = (nextOffset) => {
+    // Only prefetch if not already cached and offset is valid
+    if (!prefetchedBooks[nextOffset] && nextOffset >= 0) {
+      fetch(
+        `https://openlibrary.org/subjects/science.json?limit=${BOOKS_PER_PAGE}&offset=${nextOffset}`
+      )
+        .then((response) => {
+          if (!response.ok) {
+            console.warn(
+              `Prefetch HTTP error! status: ${response.status} for offset ${nextOffset}`
+            );
+            return null;
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data) {
+            const fetchedBooks = data.works || [];
+            if (fetchedBooks.length > 0) {
+              setPrefetchedBooks((prev) => ({
+                ...prev,
+                [nextOffset]: fetchedBooks,
+              }));
+            }
+          }
+        })
+        .catch((error) => {
+          console.error(`Prefetch error for offset ${nextOffset}:`, error);
+        });
+    }
+  };
+
   const goToNextPage = () => {
-    const nextOffset = offset + 8;
+    if (loading) return;
+
+    const nextOffset = offset + BOOKS_PER_PAGE;
     setOffset(nextOffset);
     fetchBooks(nextOffset);
 
-    // Prefetch the next few pages (page 3, 4, etc.)
-    prefetchNextPage(nextOffset + 8); // Prefetch next page (e.g., page 3)
-    prefetchNextPage(nextOffset + 16); // Prefetch the one after that (e.g., page 4)
+    // *** SCROLL TO TOP ON NEXT PAGE ***
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    prefetchNextPage(nextOffset + BOOKS_PER_PAGE);
+    prefetchNextPage(nextOffset + BOOKS_PER_PAGE * 2);
   };
 
-  // Navigate to the previous page
   const goToPreviousPage = () => {
-    const prevOffset = offset - 8;
+    if (loading) return;
+
+    const prevOffset = offset - BOOKS_PER_PAGE;
     if (prevOffset >= 0) {
       setOffset(prevOffset);
       fetchBooks(prevOffset);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -88,33 +131,53 @@ function App() {
     },
   ];
 
-  // Map books to bookItems
   const bookItems = books.map((book) => ({
     type: "book",
-    imageURL: `https://covers.openlibrary.org/b/id/${book.cover_id}-M.jpg`,
+    imageURL: book.cover_id
+      ? `https://covers.openlibrary.org/b/id/${book.cover_id}-M.jpg`
+      : PLACEHOLDER_IMAGE_URL,
     title: book.title,
     id: book.key,
   }));
 
-  // Split bookItems into two groups: first 4 for the upper row, next 4 for the lower row
-  const upperRowBooks = bookItems.slice(0, 4);
-  const lowerRowBooks = bookItems.slice(4, 8);
+  const upperRowBooks = bookItems.slice(0, BOOKS_PER_PAGE / 2);
+  const lowerRowBooks = bookItems.slice(BOOKS_PER_PAGE / 2, BOOKS_PER_PAGE);
+
+  const paginationStyle = {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: "16px",
+    margin: "24px 0",
+  };
 
   return (
     <>
       <Bookshelf items={statItems} shelfType="stats" />
+      {upperRowBooks.length > 0 && (
+        <Bookshelf items={upperRowBooks} shelfType="books" />
+      )}
 
-      {/* Upper Row Bookshelf */}
-      <Bookshelf items={upperRowBooks} shelfType="books" />
+      {lowerRowBooks.length > 0 && (
+        <Bookshelf items={lowerRowBooks} shelfType="books" />
+      )}
+      {books.length === 0 && !loading && (
+        <p style={{ textAlign: "center", margin: "20px" }}>
+          No books to display on this page.
+        </p>
+      )}
 
-      {/* Lower Row Bookshelf */}
-      <Bookshelf items={lowerRowBooks} shelfType="books" />
-
-      <div className="pagination">
-        <button onClick={goToPreviousPage} disabled={offset === 0}>
-          Previous
-        </button>
-        <button onClick={goToNextPage}>Next</button>
+      <div style={paginationStyle} className="pagination">
+        <ScrollButton
+          direction="left"
+          onClick={goToPreviousPage}
+          disabled={offset === 0 || loading}
+        />
+        <ScrollButton
+          direction="right"
+          onClick={goToNextPage}
+          disabled={loading}
+        />
       </div>
     </>
   );
