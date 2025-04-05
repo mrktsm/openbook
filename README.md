@@ -4,7 +4,7 @@ Submitted by: **Marko Tsymbaliuk**
 
 This web app: **Open Book is a web application designed to help users discover and explore books through an intuitive, visually appealing interface. With features like category browsing, search functionality, and dynamic stats such as bestsellers and top authors, it offers a seamless and engaging experience. Inspired by the sleek design of Apple Music, Open Book provides smooth transitions and responsive design for an enjoyable browsing experience on both desktop and mobile devices.**
 
-Time spent: **6.5** hours spent in total
+Time spent: **7** hours spent in total
 
 ## Video Walkthrough
 
