@@ -36,9 +36,12 @@ The following **optional** features are implemented:
 - [x] Filters use different input types
   - e.g., as a text input, a dropdown or radio selection, and/or a slider
 
-The following **additional** features are implemented:
+### The following **additional** features are implemented:
 
-* [ ] List anything else that you added to improve the site's functionality!
+- [x] **CSS Styling**: A custom, sleek design inspired by Apple Music, ensuring a modern and visually appealing interface.
+- [x] **Stat Calculation**: Stats like bestsellers and top authors are computed only once at the start to optimize performance and prevent unnecessary recalculations.
+- [x] **Animations**: Smooth transitions and animations were added to enhance the user experience and provide a more polished, dynamic feel.
+
 
 
 ## Notes
