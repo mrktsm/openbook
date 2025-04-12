@@ -1,4 +1,4 @@
-# Web Development Project 7 - Open Book
+# Web Development Project 6 - Open Book
 
 Submitted by: **Marko Tsymbaliuk**
 
