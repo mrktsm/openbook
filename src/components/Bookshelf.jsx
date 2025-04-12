@@ -24,6 +24,7 @@ const Bookshelf = ({ items, shelfType }) => {
                   fetchParams: item.fetchParams,
                   awardDescription: item.description,
                   gradientClass: item.gradientClass,
+                  chartData: item.chartData, // Pass chart data if it exists
                 }} // Pass necessary data
               >
                 {/* Stat card content inside the link */}

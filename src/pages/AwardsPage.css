@@ -2,10 +2,15 @@
 
 /* General Page Styles */
 .awards-page-container {
-  max-width: 900px; /* Constrain width */
+  max-width: 900px;
+  margin: 0 auto 2rem auto;
+  padding: 0 1.5rem 1.5rem 1.5rem;
   box-sizing: border-box;
+  /* Set base font */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  font-weight: 400; /* Set base weight to normal */
 }
-
 .awards-page-loading {
   display: flex;
   justify-content: center;
@@ -49,8 +54,7 @@
   align-items: flex-start;
   padding: 1.2rem; /* Padding for text */
   color: #fff;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif;
+  /* font-family: inherit; */ /* Inherit base font */
 }
 
 /* Gradients */
@@ -76,7 +80,7 @@
 /* Title INSIDE the cover (Styled like stat card H3) */
 .award-cover-title {
   font-size: 1.6rem;
-  font-weight: 500;
+  font-weight: 500; /* Keep slightly bolder */
   color: #fff;
   margin: 0 0 5px 0;
   line-height: 1.2;
@@ -86,7 +90,7 @@
 /* Subtitle/Description INSIDE the cover (Styled like stat card P) */
 .award-cover-description {
   font-size: 1rem;
-  font-weight: 400;
+  font-weight: 400; /* Normal weight */
   color: rgba(255, 255, 255, 0.9);
   margin: 0;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.25);
@@ -100,9 +104,9 @@
 
 /* Header Title */
 .award-header-title {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   font-size: 2.2rem;
-  font-weight: 500;
+  font-weight: 500; /* Keep slightly bolder */
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   margin: 0 0 0.3rem 0;
   color: #212529;
   line-height: 1.2;
@@ -115,6 +119,14 @@
   color: #6c757d;
   margin: 0;
   line-height: 1.5;
+  margin-bottom: 1.5rem; /* Add margin below description */
+}
+
+/* Chart Container Styling (Back in Header) */
+.award-chart-container {
+  width: 100%;
+  height: 150px; /* Readjust height */
+  /* margin-top: 1rem; */ /* Remove top margin, use description margin */
 }
 
 /* --- Section Divider --- */
@@ -167,9 +179,9 @@
 
 /* Book Row Title */
 .award-detail-book-row-title {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   font-size: 1rem;
-  font-weight: 400;
+  font-weight: 400; /* Normal weight */
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: #343a40;
   white-space: nowrap;
   overflow: hidden;
@@ -180,8 +192,9 @@
 
 /* Book Row Author */
 .award-detail-book-row-author {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   font-size: 0.9rem;
+  font-weight: 400; /* Normal weight */
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: #6c757d;
   white-space: nowrap;
   overflow: hidden;
@@ -197,6 +210,15 @@
   margin-left: calc(50px + 1.2rem); /* Adjust indent */
   margin-top: 0;
   margin-bottom: 0;
+}
+
+/* --- Bottom Chart Section --- */
+.award-chart-bottom-container {
+  width: 100%;
+  height: 180px; /* Match ResponsiveContainer height */
+  margin-top: 2.5rem; /* Space above chart section */
+  padding-top: 1.5rem; /* Space above chart within section */
+  border-top: 1px solid #e9ecef; /* Separator line */
 }
 
 /* Responsive adjustments */

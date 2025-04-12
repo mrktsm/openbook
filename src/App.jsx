@@ -71,11 +71,31 @@ function App() {
     }
   };
 
-  // Fetch data for stat cards (Restore Original Titles, Change Descriptions)
+  // Fetch data for stat cards (Add back charts for all categories)
   const fetchStatData = async () => {
-    // Fetch minimal data needed for fetchParams and IDs
-    const classicsResult = await fetchBooks("classics", "", 1); // For Staff Picks params
-    const bestsellerResult = await fetchBooks("", "bestseller", 1); // For Bestsellers params
+    // --- Featured / Staff Picks ---
+    const classicsResult = await fetchBooks("classics", "", 7); // Fetch 7 again
+    // Regenerate chart data for Featured/Classics
+    const featuredChartData = classicsResult.books
+      .map((book) => ({
+        name:
+          book.title.substring(0, 15) + (book.title.length > 15 ? "..." : ""),
+        year: parseInt(book.first_publish_year) || 0,
+      }))
+      .filter((item) => item.year > 0);
+
+    // --- Trending / Best Sellers ---
+    const bestsellerResult = await fetchBooks("", "bestseller", 7); // Fetch 7 again
+    // Regenerate chart data for Trending/Bestsellers
+    const trendingChartData = bestsellerResult.books
+      .map((book) => ({
+        name:
+          book.title.substring(0, 15) + (book.title.length > 15 ? "..." : ""),
+        year: parseInt(book.first_publish_year) || 0,
+      }))
+      .filter((item) => item.year > 0);
+
+    // --- Top Author ---
     const authorBooksResult = await fetchBooks("literature", "", 20);
     const authorBooks = authorBooksResult.books;
     const authorCount = authorBooks.reduce((acc, book) => {
@@ -92,32 +112,41 @@ function App() {
     );
     const topAuthorName =
       sortedAuthors.length > 0 ? sortedAuthors[0][0] : "Unknown";
-    // const topAuthorWorkCount = sortedAuthors.length > 0 ? sortedAuthors[0][1] : 0;
+    // Calculate author frequencies ONLY for this category
+    const authorFrequencyData = sortedAuthors
+      .slice(0, 7)
+      .map(([name, count]) => ({
+        name: name.split(" ").pop(),
+        count: count,
+      }));
 
     return [
       {
         type: "stat",
-        title: "Staff Picks", // Original Title
-        description: "Featured", // Generic Description
+        title: "Staff Picks",
+        description: "Featured",
         id: "classics",
         gradientClass: "gradient-1",
         fetchParams: { category: "classics", searchTerm: "", limit: 5 },
+        chartData: featuredChartData, // RE-ADD chartData
       },
       {
         type: "stat",
-        title: "Best Sellers", // Original Title
-        description: "Trending Now", // Generic Description
+        title: "Best Sellers",
+        description: "Trending Now",
         id: "bestseller",
         gradientClass: "gradient-2",
         fetchParams: { category: "", searchTerm: "bestseller", limit: 5 },
+        chartData: trendingChartData, // RE-ADD chartData
       },
       {
         type: "stat",
-        title: "Top Author", // Original Title
-        description: "Discover", // Generic Description
+        title: "Top Author",
+        description: "Discover",
         id: `author-${topAuthorName.replace(/\s+/g, "-")}`,
         gradientClass: "gradient-3",
         fetchParams: { category: "", searchTerm: topAuthorName, limit: 5 },
+        chartData: authorFrequencyData, // Keep chartData
       },
     ];
   };
