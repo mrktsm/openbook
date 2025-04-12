@@ -1,4 +1,4 @@
-# Web Development Project 6 - Open Book
+# Web Development Project 7 - Open Book
 
 Submitted by: **Marko Tsymbaliuk**
 
@@ -49,7 +49,6 @@ The following **additional** features are implemented:
 - [x] **Stat Calculation**: Stats like bestsellers and top authors are computed only once at the start to optimize performance and prevent unnecessary recalculations.
 - [x] **Animations**: Smooth transitions and animations were added to enhance the user experience and provide a more polished, dynamic feel.
 - [x] **Deployment**: The app has been deployed using Vercel for seamless hosting and scalability.
-- [ ] List anything else that you added to improve the site's functionality!
 
 ## Notes
 
