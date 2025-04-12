@@ -1,0 +1,197 @@
+/* --- BookDetail Component Styles --- */
+
+/* Main container - remove card look, allow more width */
+.book-detail-container {
+  padding: 3rem 2rem; /* Increase padding */
+  max-width: 1100px; /* Allow more width */
+  margin: 2rem auto; /* Center it */
+  background-color: transparent; /* Remove background */
+  border-radius: 0; /* Remove rounded corners */
+  box-shadow: none; /* Remove shadow */
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; /* Nicer font stack */
+}
+
+/* Back link styling */
+.back-link {
+  display: inline-block;
+  margin-bottom: 2.5rem; /* More space below */
+  color: #555; /* Subtler color */
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+}
+
+.back-link:hover {
+  color: #007bff; /* Color on hover */
+  text-decoration: none;
+}
+
+/* Main content area (image + info) */
+.book-detail-content {
+  display: flex;
+  gap: 3rem; /* Increased gap */
+  align-items: flex-start; /* Align items to the top */
+}
+
+/* Image container */
+.book-detail-image {
+  flex: 0 0 300px; /* Slightly larger fixed width for image */
+  text-align: center;
+}
+
+.book-detail-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px; /* Keep subtle rounding */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15); /* Softer shadow */
+}
+
+/* Info container */
+.book-detail-info {
+  flex: 1; /* Take remaining space */
+  padding-top: 0.5rem; /* Align text slightly better with image */
+}
+
+.book-detail-info h1 {
+  margin-top: 0;
+  margin-bottom: 0.5rem; /* Reduced bottom margin */
+  font-size: 2.6rem; /* Slightly larger title */
+  font-weight: 700; /* Bolder */
+  color: #1a1a1a; /* Even darker */
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.5px; /* Subtle tightening */
+}
+
+/* Style for Author/Year meta data */
+.book-meta {
+  font-size: 0.95rem; /* Smaller meta text */
+  color: #666; /* Lighter color */
+  margin-bottom: 0.3rem; /* Tighter spacing */
+}
+
+.book-meta strong {
+  color: #444; /* Darker label */
+  font-weight: 600;
+}
+
+/* Style for the main description paragraph */
+.book-description {
+  font-size: 1.05rem; /* Keep base size */
+  color: #333; /* Darker than meta */
+  line-height: 1.75; /* Slightly more line height */
+  margin: 1.5rem 0; /* Add vertical spacing around description */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* Style for other info like Editions, Subjects, Availability */
+.book-detail-info p:not(.book-meta):not(.book-description) {
+  margin-bottom: 0.6rem; /* Adjust spacing */
+  font-size: 0.9rem; /* Smaller info text */
+  color: #555;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+.book-detail-info p:not(.book-meta):not(.book-description) strong {
+  color: #222;
+  font-weight: 600;
+}
+
+/* Subjects list specific styling */
+.subjects-list {
+  font-style: italic;
+  color: #666; /* Match meta color */
+}
+
+.book-detail-info strong {
+  /* This general rule might not be needed if specific ones cover all cases */
+  /* color: #111; */
+  /* font-weight: 600; */
+}
+
+/* Divider Style */
+.detail-divider {
+  border: none;
+  height: 1px;
+  background-color: #e0e0e0; /* Light gray divider */
+  margin: 1.8rem 0; /* Space around divider */
+}
+
+/* Styling for Availability Tags */
+.availability-tag {
+  display: inline-block;
+  padding: 0.2em 0.6em;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 4px;
+  margin-left: 0.5em;
+  vertical-align: middle;
+}
+
+.availability-tag.available {
+  background-color: #e6f7f0; /* Light green */
+  color: #098a4d;
+}
+
+.availability-tag.not-available {
+  background-color: #fef3e8; /* Light orange/yellow */
+  color: #c87b0e;
+}
+
+/* Styling for External Links */
+.external-link {
+  color: #007bff;
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin-left: 0.5em;
+  transition: text-decoration 0.2s ease;
+}
+
+.external-link:hover {
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .book-detail-container {
+    padding: 2rem 1rem; /* Adjust padding */
+  }
+
+  .book-detail-content {
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem; /* Adjust gap */
+  }
+
+  .book-detail-image {
+    flex: 0 0 auto; /* Allow image to size naturally */
+    margin-bottom: 1.5rem;
+    max-width: 250px; /* Adjust max-width for mobile */
+  }
+
+  .book-detail-info {
+    text-align: center;
+    padding-top: 0;
+  }
+
+  .book-detail-info h1 {
+    font-size: 2rem;
+    white-space: normal; /* Allow title to wrap on mobile */
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  .book-description {
+    margin: 1rem 0;
+    font-size: 1rem;
+  }
+
+  .detail-divider {
+    margin: 1.2rem 0;
+  }
+}

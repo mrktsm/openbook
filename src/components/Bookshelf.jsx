@@ -25,15 +25,14 @@ const Bookshelf = ({ items, shelfType }) => {
               </div>
             );
           }
-          // --- Render Book ---
+          // --- Render Book (using item.content) ---
           else if (item.type === "book") {
+            // Render the content passed from App.jsx, which includes the Link
             return (
-              <div
-                key={item.id}
-                className="book"
-                // Apply background image via CSS custom property
-                style={{ "--bg-image": `url(${item.imageURL})` }}
-              />
+              <div key={item.id} className="book-item-wrapper">
+                {/* item.content already contains the Link and img */}
+                {item.content}
+              </div>
             );
           }
           // Always return null or an empty fragment for unhandled types

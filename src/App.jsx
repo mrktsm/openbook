@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { Route, Routes, Link, useParams, useLocation } from "react-router-dom";
 import Bookshelf from "./components/Bookshelf";
 import "./App.css";
 import ScrollButton from "./components/ui/ScrollButton";
 import SideBar from "./components/SideBar";
 import Spinner from "./components/ui/Spinner";
+import BookDetail from "./components/BookDetail";
 
 const BOOKS_PER_PAGE = 8;
 const MAX_BOOKS_TO_FETCH = 100;
@@ -51,6 +53,10 @@ function App() {
         cover_id: book.cover_i || book.cover_id || null,
         first_publish_year: book.first_publish_year || "Unknown",
         author_name: book.author_name ? book.author_name.join(", ") : "Unknown",
+        edition_count: book.edition_count || 0,
+        has_fulltext: book.has_fulltext || false,
+        public_scan_b: book.public_scan_b || false,
+        ia: book.ia || [],
       }));
       return mappedBooks;
     } catch (error) {
@@ -236,14 +242,26 @@ function App() {
     setShowMobileSidebar((prev) => !prev);
   };
 
-  // Transform books into display items
+  // Transform books into display items with Links
   const bookItems = state.currentBooks.map((book) => ({
     type: "book",
-    imageURL: book.cover_id
-      ? `https://covers.openlibrary.org/b/id/${book.cover_id}-M.jpg`
-      : PLACEHOLDER_IMAGE_URL,
-    title: book.title,
     id: book.key,
+    content: (
+      <Link
+        to={`/book/${encodeURIComponent(book.key)}`}
+        state={{ bookData: book }}
+      >
+        <img
+          src={
+            book.cover_id
+              ? `https://covers.openlibrary.org/b/id/${book.cover_id}-M.jpg`
+              : PLACEHOLDER_IMAGE_URL
+          }
+          alt={book.title}
+          className="book-cover"
+        />
+      </Link>
+    ),
   }));
 
   const upperRowBooks = bookItems.slice(0, BOOKS_PER_PAGE / 2);
@@ -278,48 +296,61 @@ function App() {
         className={showMobileSidebar ? "active" : ""}
       />
       <div className="main-content">
-        {state.isLoading ? (
-          <Spinner />
-        ) : (
-          <>
-            <Bookshelf items={state.statItems} shelfType="stats" />
-            {upperRowBooks.length > 0 && (
-              <Bookshelf items={upperRowBooks} shelfType="books" />
-            )}
-            {lowerRowBooks.length > 0 && (
-              <Bookshelf items={lowerRowBooks} shelfType="books" />
-            )}
-            {state.currentBooks.length === 0 && !state.isLoading && (
-              <p style={{ textAlign: "center", margin: "20px" }}>
-                {state.searchTerm
-                  ? `No results found for "${state.searchTerm}".`
-                  : "No books to display on this page."}
-              </p>
-            )}
-            <div className="pagination">
-              <ScrollButton
-                direction="left"
-                onClick={goToPreviousPage}
-                disabled={state.offset === 0 || state.isLoading}
-              />
-              <ScrollButton
-                direction="right"
-                onClick={goToNextPage}
-                disabled={
-                  state.isLoading ||
-                  state.offset + BOOKS_PER_PAGE >=
-                    (state.searchTerm
-                      ? state.allBooks.filter((book) =>
-                          book.title
-                            .toLowerCase()
-                            .includes(state.searchTerm.toLowerCase())
-                        ).length
-                      : state.allBooks.length)
-                }
-              />
-            </div>
-          </>
-        )}
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                {state.isLoading ? (
+                  <Spinner />
+                ) : (
+                  <>
+                    <Bookshelf items={state.statItems} shelfType="stats" />
+                    {upperRowBooks.length > 0 && (
+                      <Bookshelf items={upperRowBooks} shelfType="books" />
+                    )}
+                    {lowerRowBooks.length > 0 && (
+                      <Bookshelf items={lowerRowBooks} shelfType="books" />
+                    )}
+                    {state.currentBooks.length === 0 && !state.isLoading && (
+                      <p style={{ textAlign: "center", margin: "20px" }}>
+                        {state.searchTerm
+                          ? `No results found for "${state.searchTerm}".`
+                          : "No books to display on this page."}
+                      </p>
+                    )}
+                    <div className="pagination">
+                      <ScrollButton
+                        direction="left"
+                        onClick={goToPreviousPage}
+                        disabled={state.offset === 0 || state.isLoading}
+                      />
+                      <ScrollButton
+                        direction="right"
+                        onClick={goToNextPage}
+                        disabled={
+                          state.isLoading ||
+                          state.offset + BOOKS_PER_PAGE >=
+                            (state.searchTerm
+                              ? state.allBooks.filter((book) =>
+                                  book.title
+                                    .toLowerCase()
+                                    .includes(state.searchTerm.toLowerCase())
+                                ).length
+                              : state.allBooks.length)
+                        }
+                      />
+                    </div>
+                  </>
+                )}
+              </>
+            }
+          />
+          <Route
+            path="/book/:bookKey"
+            element={<BookDetail placeholderImage={PLACEHOLDER_IMAGE_URL} />}
+          />
+        </Routes>
       </div>
     </>
   );
