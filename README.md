@@ -40,7 +40,7 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-![Alt Text](docs/open-book-demo.gif)
+![Video Walkthrough](<docs/Untitled%20design%20(10).gif>)
 
 <!-- Replace this with whatever GIF tool you used! -->
 
