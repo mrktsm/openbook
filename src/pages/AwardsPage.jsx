@@ -187,7 +187,7 @@ const AwardsPage = ({ placeholderImage, fetchBooksFunction }) => {
             <div className="award-chart-container">
               {" "}
               {/* Renamed class */}
-              <ResponsiveContainer width="100%" height={180}>
+              <ResponsiveContainer width="100%" height={155}>
                 <BarChart
                   data={chartData}
                   margin={{ top: 20, right: 10, left: 0, bottom: 5 }}

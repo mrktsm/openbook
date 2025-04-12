@@ -29,9 +29,9 @@
 /* --- Header Section (Flex Row) --- */
 .award-page-header {
   display: flex;
-  align-items: flex-start; /* Align top of cover with top of text block */
-  gap: 4rem; /* Increased gap further */
-  margin-bottom: 2.5rem; /* Increased space below header */
+  align-items: stretch; /* Align tops and stretch shorter item */
+  gap: 4rem;
+  margin-bottom: 2.5rem;
 }
 
 /* Cover Wrapper (Left Item) */
@@ -98,8 +98,11 @@
 
 /* Header Info (Right Item) */
 .award-header-info {
-  flex: 1; /* Take remaining space */
+  flex: 1;
   min-width: 0;
+  display: flex; /* Use flex to distribute space */
+  flex-direction: column; /* Stack text and chart */
+  /* No fixed height, let stretch handle it */
 }
 
 /* Header Title */
@@ -125,8 +128,10 @@
 /* Chart Container Styling (Back in Header) */
 .award-chart-container {
   width: 100%;
-  height: 150px; /* Readjust height */
-  /* margin-top: 1rem; */ /* Remove top margin, use description margin */
+  flex-grow: 1; /* Take remaining vertical space */
+  /* min-height: 100px; */ /* Removed min-height */
+  /* Remove fixed height */
+  /* height: 150px; */
 }
 
 /* --- Section Divider --- */
