@@ -22,6 +22,8 @@ const Bookshelf = ({ items, shelfType }) => {
                 state={{
                   awardTitle: item.title,
                   fetchParams: item.fetchParams,
+                  awardDescription: item.description,
+                  gradientClass: item.gradientClass,
                 }} // Pass necessary data
               >
                 {/* Stat card content inside the link */}

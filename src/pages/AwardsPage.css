@@ -1,8 +1,8 @@
 /* src/pages/AwardsPage.css */
 
+/* General Page Styles */
 .awards-page-container {
-  width: 100%;
-  padding: 2rem;
+  max-width: 900px; /* Constrain width */
   box-sizing: border-box;
 }
 
@@ -13,123 +13,231 @@
   min-height: 300px;
 }
 
-.award-section {
-  margin-bottom: 3rem;
+.error-message,
+.no-books-message {
+  color: #6c757d;
+  font-style: italic;
+  margin: 1rem 0;
+  text-align: center;
 }
 
-/* Large Square Header */
-.award-header {
+/* --- Header Section (Flex Row) --- */
+.award-page-header {
+  display: flex;
+  align-items: flex-start; /* Align top of cover with top of text block */
+  gap: 4rem; /* Increased gap further */
+  margin-bottom: 2.5rem; /* Increased space below header */
+}
+
+/* Cover Wrapper (Left Item) */
+.award-detail-cover-wrapper {
+  flex: 0 0 200px; /* Adjust fixed size */
+  margin: 0; /* Remove centering margin */
+}
+
+/* Cover Itself */
+.award-detail-cover {
   width: 100%;
-  aspect-ratio: 3 / 1; /* Wide rectangle, adjust as needed */
-  max-height: 250px; /* Max height for the header */
-  padding: 2rem;
-  box-sizing: border-box;
+  aspect-ratio: 1 / 1; /* Square */
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  /* Reinstate text positioning styles */
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Center text vertically */
-  align-items: flex-start; /* Align text to the left */
-  border-radius: 12px;
-  margin-bottom: 1.5rem;
-  overflow: hidden;
-  position: relative;
+  justify-content: space-between; /* Align text top/bottom */
+  align-items: flex-start;
+  padding: 1.2rem; /* Padding for text */
   color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
 }
 
-/* Apply gradients (reuse from stat cards) */
-.award-header.gradient-1 {
+/* Gradients */
+/* ... gradient rules ... */
+.award-detail-cover.gradient-1 {
   background-image: linear-gradient(135deg, #ff6b6b, #ff8e53);
 }
-
-.award-header.gradient-2 {
+.award-detail-cover.gradient-2 {
   background-image: linear-gradient(135deg, #67c7eb, #4facfe);
 }
-
-.award-header.gradient-3 {
+.award-detail-cover.gradient-3 {
   background-image: linear-gradient(135deg, #8fd3f4, #84fab0);
 }
-
-.award-header.gradient-default {
+.award-detail-cover.gradient-default {
   background-image: linear-gradient(135deg, #888, #555);
 }
 
-.award-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin: 0;
+/* Text content wrapper inside the cover */
+.award-cover-text-content {
+  /* No specific styles needed, parent flex aligns */
+}
+
+/* Title INSIDE the cover (Styled like stat card H3) */
+.award-cover-title {
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: #fff;
+  margin: 0 0 5px 0;
   line-height: 1.2;
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.35);
 }
 
-/* Book List Styling */
-.award-book-list {
-  display: grid;
-  /* Adjust columns based on desired book size */
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
+/* Subtitle/Description INSIDE the cover (Styled like stat card P) */
+.award-cover-description {
+  font-size: 1rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.25);
 }
 
-.award-book-item {
+/* Header Info (Right Item) */
+.award-header-info {
+  flex: 1; /* Take remaining space */
+  min-width: 0;
+}
+
+/* Header Title */
+.award-header-title {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 2.2rem;
+  font-weight: 500;
+  margin: 0 0 0.3rem 0;
+  color: #212529;
+  line-height: 1.2;
+}
+
+/* Header Description */
+.award-header-description {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 0.95rem;
+  color: #6c757d;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* --- Section Divider --- */
+.award-section-divider {
+  border: none;
+  height: 1px;
+  background-color: #e9ecef;
+  margin: 0 0 1.5rem 0;
+}
+
+/* --- Book List Section --- */
+.award-detail-list-wrapper {
+  /* No extra styles needed */
+}
+
+.award-detail-book-list {
+  display: block;
+}
+
+/* Book Row Styling */
+.award-detail-book-row-link {
   display: block;
   text-decoration: none;
   color: inherit;
-  transition: transform 0.2s ease-out;
 }
 
-.award-book-item:hover {
-  transform: scale(1.05);
+.award-detail-book-row {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.2rem 0; /* Increased padding MORE for taller rows */
 }
 
-.award-book-cover {
-  display: block;
-  width: 100%;
-  aspect-ratio: 115 / 175; /* Match bookshelf book ratio */
+/* Book Row Cover */
+.award-detail-book-row-cover {
+  flex: 0 0 50px;
+  height: 50px;
   object-fit: cover;
   border-radius: 4px;
-  margin-bottom: 0.5rem; /* Space for potential title */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Optional title style if added later */
-/*
-.award-book-title {
-  font-size: 0.85rem;
-  text-align: center;
+/* Book Row Info */
+.award-detail-book-row-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Book Row Title */
+.award-detail-book-row-title {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #343a40;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-*/
-
-.no-books-message {
-  color: #666;
-  font-style: italic;
-  margin-bottom: 1.5rem;
+  line-height: 1.3;
+  margin-bottom: 0.2rem;
 }
 
-/* Divider */
-.award-divider {
+/* Book Row Author */
+.award-detail-book-row-author {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 0.9rem;
+  color: #6c757d;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+/* Row Divider */
+.award-detail-row-divider {
   border: none;
   height: 1px;
-  background-color: #ddd; /* Lighter divider */
-  margin: 0; /* Remove default margins */
+  background-color: #ddd; /* Slightly darker divider */
+  margin-left: calc(50px + 1.2rem); /* Adjust indent */
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+  .award-page-header {
+    flex-direction: column;
+    align-items: center; /* Center items */
+    text-align: center;
+    gap: 1.5rem;
+  }
+  .award-detail-cover-wrapper {
+    flex-basis: auto;
+    width: 60%;
+    max-width: 200px;
+  }
+  .award-header-info {
+    padding-bottom: 0;
+  }
+  .award-header-title {
+    font-size: 1.8rem;
+  }
+  .award-header-description {
+    font-size: 0.9rem;
+  }
   .awards-page-container {
-    padding: 1rem;
+    margin: 1rem auto;
+    padding: 0 1rem;
   }
-  .award-header {
-    padding: 1.5rem;
-    aspect-ratio: 2 / 1; /* Adjust aspect ratio */
-    max-height: 200px;
+
+  .award-section-divider {
+    margin-bottom: 1rem;
   }
-  .award-title {
-    font-size: 2rem;
+
+  .award-detail-book-row {
+    padding: 1rem 0; /* Adjust mobile row padding */
   }
-  .award-book-list {
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-    gap: 1rem;
+  .award-detail-book-row-cover {
+    flex-basis: 45px;
+    height: 45px;
+  }
+  .award-detail-row-divider {
+    margin-left: calc(45px + 1rem);
   }
 }
