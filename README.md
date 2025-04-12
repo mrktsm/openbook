@@ -32,7 +32,7 @@ The following **required** functionality is completed:
   - _To ensure an accurate grade, your sidebar **must** be viewable when showing the details view in your recording._
 - [x] **Each detail view of an item has a direct, unique URL link to that item's detail view page**
   - _To ensure an accurate grade, the URL/address bar of your web browser **must** be viewable in your recording._
-- [ ] **The app includes at least two unique charts developed using the fetched data that tell an interesting story**
+- [x] **The app includes at least two unique charts developed using the fetched data that tell an interesting story**
   - At least two charts should be incorporated into the dashboard view of the site
   - Each chart should describe a different aspect of the dataset
 
