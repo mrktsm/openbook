@@ -1,0 +1,135 @@
+/* src/pages/AwardsPage.css */
+
+.awards-page-container {
+  width: 100%;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.awards-page-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+.award-section {
+  margin-bottom: 3rem;
+}
+
+/* Large Square Header */
+.award-header {
+  width: 100%;
+  aspect-ratio: 3 / 1; /* Wide rectangle, adjust as needed */
+  max-height: 250px; /* Max height for the header */
+  padding: 2rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center text vertically */
+  align-items: flex-start; /* Align text to the left */
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  position: relative;
+  color: #fff;
+}
+
+/* Apply gradients (reuse from stat cards) */
+.award-header.gradient-1 {
+  background-image: linear-gradient(135deg, #ff6b6b, #ff8e53);
+}
+
+.award-header.gradient-2 {
+  background-image: linear-gradient(135deg, #67c7eb, #4facfe);
+}
+
+.award-header.gradient-3 {
+  background-image: linear-gradient(135deg, #8fd3f4, #84fab0);
+}
+
+.award-header.gradient-default {
+  background-image: linear-gradient(135deg, #888, #555);
+}
+
+.award-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Book List Styling */
+.award-book-list {
+  display: grid;
+  /* Adjust columns based on desired book size */
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.award-book-item {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease-out;
+}
+
+.award-book-item:hover {
+  transform: scale(1.05);
+}
+
+.award-book-cover {
+  display: block;
+  width: 100%;
+  aspect-ratio: 115 / 175; /* Match bookshelf book ratio */
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 0.5rem; /* Space for potential title */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Optional title style if added later */
+/*
+.award-book-title {
+  font-size: 0.85rem;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+*/
+
+.no-books-message {
+  color: #666;
+  font-style: italic;
+  margin-bottom: 1.5rem;
+}
+
+/* Divider */
+.award-divider {
+  border: none;
+  height: 1px;
+  background-color: #ddd; /* Lighter divider */
+  margin: 0; /* Remove default margins */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .awards-page-container {
+    padding: 1rem;
+  }
+  .award-header {
+    padding: 1.5rem;
+    aspect-ratio: 2 / 1; /* Adjust aspect ratio */
+    max-height: 200px;
+  }
+  .award-title {
+    font-size: 2rem;
+  }
+  .award-book-list {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 1rem;
+  }
+}

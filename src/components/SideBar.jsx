@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+// Remove Link import if no longer needed
+// import { Link } from "react-router-dom";
 
 const SideBar = ({ onSearch, className, onChangeCategory }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,6 +38,11 @@ const SideBar = ({ onSearch, className, onChangeCategory }) => {
   return (
     <div className={`sidebar ${className || ""}`}>
       <div className="sidebar-content">
+        {/* Logo REMOVED */}
+        {/* <div className="sidebar-logo">
+          <h2>OpenBook</h2>
+        </div> */}
+
         {/* Search Bar */}
         <div className="sidebar-section">
           <form onSubmit={handleSearchSubmit} className="search-container">
@@ -65,7 +72,24 @@ const SideBar = ({ onSearch, className, onChangeCategory }) => {
           </form>
         </div>
 
-        {/* Categories List - Apple style uses list, not dropdown */}
+        {/* Apple-style quick links (REMOVED Awards) */}
+        <div className="sidebar-section">
+          <h3>Library</h3>
+          <ul className="quick-links">
+            {/* REMOVED Awards Link */}
+            <li className="quick-link-item">
+              <span className="quick-link-label">Featured</span>
+            </li>
+            <li className="quick-link-item">
+              <span className="quick-link-label">Reading Now</span>
+            </li>
+            <li className="quick-link-item">
+              <span className="quick-link-label">Bookmarks</span>
+            </li>
+          </ul>
+        </div>
+
+        {/* Categories List */}
         <div className="sidebar-section">
           <h3>Categories</h3>
           <ul className="category-list">
@@ -80,22 +104,6 @@ const SideBar = ({ onSearch, className, onChangeCategory }) => {
                 <span className="category-label">{category.label}</span>
               </li>
             ))}
-          </ul>
-        </div>
-
-        {/* Apple-style quick links */}
-        <div className="sidebar-section">
-          <h3>Quick Links</h3>
-          <ul className="quick-links">
-            <li className="quick-link-item">
-              <span className="quick-link-label">Featured</span>
-            </li>
-            <li className="quick-link-item">
-              <span className="quick-link-label">Reading Now</span>
-            </li>
-            <li className="quick-link-item">
-              <span className="quick-link-label">Bookmarks</span>
-            </li>
           </ul>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom"; // Import Link
 // Removed CSS import here, assuming it's handled globally by App.js or index.js
 // If Bookshelf.css ONLY contains bookshelf specific styles, import it:
 // import './Bookshelf.css';
@@ -11,18 +12,24 @@ const Bookshelf = ({ items, shelfType }) => {
     <div className="bookshelf">
       <div className={containerClass}>
         {items.map((item) => {
-          // --- Render Stat Card ---
+          // --- Render Stat Card with Link ---
           if (item.type === "stat") {
             return (
-              <div
+              <Link
+                to={`/award/${encodeURIComponent(item.id)}`} // Link to award detail page
                 key={item.id}
-                // Apply base class and specific gradient class
-                className={`stat-card ${item.gradientClass || ""}`}
+                className={`stat-card-link ${item.gradientClass || ""}`} // Apply gradient to link
+                state={{
+                  awardTitle: item.title,
+                  fetchParams: item.fetchParams,
+                }} // Pass necessary data
               >
-                {/* Added divs for potentially better text control if needed */}
-                <div>{item.title && <h3>{item.title}</h3>}</div>
-                <div>{item.description && <p>{item.description}</p>}</div>
-              </div>
+                {/* Stat card content inside the link */}
+                <div className="stat-card-content">
+                  <div>{item.title && <h3>{item.title}</h3>}</div>
+                  <div>{item.description && <p>{item.description}</p>}</div>
+                </div>
+              </Link>
             );
           }
           // --- Render Book (using item.content) ---

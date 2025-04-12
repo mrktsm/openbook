@@ -6,6 +6,7 @@ import ScrollButton from "./components/ui/ScrollButton";
 import SideBar from "./components/SideBar";
 import Spinner from "./components/ui/Spinner";
 import BookDetail from "./components/BookDetail";
+import AwardsPage from "./pages/AwardsPage";
 
 const BOOKS_PER_PAGE = 8;
 const MAX_BOOKS_TO_FETCH = 100;
@@ -20,22 +21,25 @@ function App() {
     category: "science",
     searchTerm: "",
     isLoading: false,
-    statItems: [], // Dynamic stat items
+    statItems: [],
+    totalBooksFound: 0,
   });
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const location = useLocation();
 
-  // Fetch books for a given category or search term
+  // Fetch books - Updated to handle pagination and return total found
   const fetchBooks = async (
     category,
     searchTerm,
-    limit = MAX_BOOKS_TO_FETCH
+    limit = MAX_BOOKS_TO_FETCH,
+    offset = 0
   ) => {
     try {
       let url;
       if (searchTerm) {
         url = `https://openlibrary.org/search.json?q=${encodeURIComponent(
           searchTerm
-        )}&limit=${limit}`;
+        )}&limit=${limit}&offset=${offset}`;
       } else {
         url = `https://openlibrary.org/subjects/${category}.json?limit=${limit}`;
       }
@@ -47,8 +51,10 @@ function App() {
       const data = await response.json();
 
       const books = searchTerm ? data.docs : data.works || [];
+      const totalFound = searchTerm ? data.numFound : (data.works || []).length;
+
       const mappedBooks = books.map((book) => ({
-        key: book.key || book.cover_edition_key || `${Math.random()}`,
+        key: book.key || book.cover_edition_key || `/works/OL${Math.random()}W`,
         title: book.title,
         cover_id: book.cover_i || book.cover_id || null,
         first_publish_year: book.first_publish_year || "Unknown",
@@ -58,176 +64,191 @@ function App() {
         public_scan_b: book.public_scan_b || false,
         ia: book.ia || [],
       }));
-      return mappedBooks;
+      return { books: mappedBooks, totalFound };
     } catch (error) {
       console.error("Failed to fetch books:", error);
-      return [];
+      return { books: [], totalFound: 0 };
     }
   };
 
-  // Fetch data for stat cards
+  // Fetch data for stat cards (Restore Original Titles, Change Descriptions)
   const fetchStatData = async () => {
-    // Staff Picks: Use "classics" as a proxy
-    const staffPicks = await fetchBooks("classics", "", 1);
-    const staffPick = staffPicks[0] || {
-      title: "N/A",
-      first_publish_year: "N/A",
-    };
-
-    // Best Sellers: Use recent popular books (sort by year as a proxy)
-    const bestSellers = await fetchBooks("", "bestseller", 10);
-    const latestBook = bestSellers.sort(
-      (a, b) => (b.first_publish_year || 0) - (a.first_publish_year || 0)
-    )[0] || { title: "N/A", first_publish_year: "N/A" };
-
-    // Top Authors: Fetch a larger set and count authors (simplified)
-    const authorBooks = await fetchBooks("literature", "", 20);
+    // Fetch minimal data needed for fetchParams and IDs
+    const classicsResult = await fetchBooks("classics", "", 1); // For Staff Picks params
+    const bestsellerResult = await fetchBooks("", "bestseller", 1); // For Bestsellers params
+    const authorBooksResult = await fetchBooks("literature", "", 20);
+    const authorBooks = authorBooksResult.books;
     const authorCount = authorBooks.reduce((acc, book) => {
-      if (book.author_name) {
-        acc[book.author_name] = (acc[book.author_name] || 0) + 1;
+      if (book.author_name && book.author_name !== "Unknown") {
+        const authors = book.author_name.split(", ");
+        authors.forEach((author) => {
+          acc[author] = (acc[author] || 0) + 1;
+        });
       }
       return acc;
     }, {});
-    const topAuthor = Object.entries(authorCount).sort(
+    const sortedAuthors = Object.entries(authorCount).sort(
       (a, b) => b[1] - a[1]
-    )[0] || ["Unknown", 0];
+    );
+    const topAuthorName =
+      sortedAuthors.length > 0 ? sortedAuthors[0][0] : "Unknown";
+    // const topAuthorWorkCount = sortedAuthors.length > 0 ? sortedAuthors[0][1] : 0;
 
     return [
       {
         type: "stat",
-        title: "Staff Picks",
-        description: `${staffPick.title} (${staffPick.first_publish_year})`,
-        id: "stat1",
+        title: "Staff Picks", // Original Title
+        description: "Featured", // Generic Description
+        id: "classics",
         gradientClass: "gradient-1",
+        fetchParams: { category: "classics", searchTerm: "", limit: 5 },
       },
       {
         type: "stat",
-        title: "Best Sellers",
-        description: `${latestBook.title} (${latestBook.first_publish_year})`,
-        id: "stat2",
+        title: "Best Sellers", // Original Title
+        description: "Trending Now", // Generic Description
+        id: "bestseller",
         gradientClass: "gradient-2",
+        fetchParams: { category: "", searchTerm: "bestseller", limit: 5 },
       },
       {
         type: "stat",
-        title: "Top Authors",
-        description: `${topAuthor[0]} (${topAuthor[1]} works)`,
-        id: "stat3",
+        title: "Top Author", // Original Title
+        description: "Discover", // Generic Description
+        id: `author-${topAuthorName.replace(/\s+/g, "-")}`,
         gradientClass: "gradient-3",
+        fetchParams: { category: "", searchTerm: topAuthorName, limit: 5 },
       },
     ];
   };
 
   // Filter and paginate books
-  const filterAndPaginateBooks = (allBooks, searchTerm, offset) => {
-    const filteredBooks = searchTerm
-      ? allBooks.filter((book) =>
-          book.title.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      : allBooks;
-
+  const filterAndPaginateBooks = (allBooks, offset) => {
     const startIndex = offset;
     const endIndex = offset + BOOKS_PER_PAGE;
-    return filteredBooks.slice(startIndex, endIndex);
+    return allBooks.slice(startIndex, endIndex);
   };
 
   // Load books and stat data
-  const loadBooks = async (newCategory, newSearchTerm) => {
-    setState((prev) => ({ ...prev, isLoading: true }));
+  const loadBooksAndStats = async (newCategory, newSearchTerm) => {
+    setState((prev) => ({ ...prev, isLoading: true, offset: 0 }));
 
-    const allBooks = await fetchBooks(newCategory, newSearchTerm);
-    const currentBooks = filterAndPaginateBooks(allBooks, newSearchTerm, 0);
+    let fetchedBooks = [];
+    let totalFound = 0;
+    let categoryAllBooks = [];
+
+    // Fetch main bookshelf books (search or category)
+    if (newSearchTerm) {
+      const result = await fetchBooks("", newSearchTerm, BOOKS_PER_PAGE, 0);
+      fetchedBooks = result.books;
+      totalFound = result.totalFound;
+    } else {
+      const result = await fetchBooks(newCategory, "", MAX_BOOKS_TO_FETCH);
+      categoryAllBooks = result.books;
+      fetchedBooks = filterAndPaginateBooks(categoryAllBooks, 0);
+      totalFound = categoryAllBooks.length;
+    }
+
+    // Fetch stat items for the shelf
     const statItems = await fetchStatData();
 
     setState((prev) => ({
       ...prev,
-      allBooks,
-      currentBooks,
+      allBooks: categoryAllBooks,
+      currentBooks: fetchedBooks,
       offset: 0,
       category: newCategory,
       searchTerm: newSearchTerm,
-      statItems,
+      statItems: statItems, // Set stat items
+      totalBooksFound: totalFound,
       isLoading: false,
     }));
   };
 
   // Handle category change
   const handleCategoryChange = (newCategory) => {
-    loadBooks(newCategory, "");
+    loadBooksAndStats(newCategory, ""); // Use combined loader
   };
 
   // Handle search
   const handleSearch = (searchTerm) => {
     if (!searchTerm.trim()) {
-      const currentBooks = filterAndPaginateBooks(state.allBooks, "", 0);
-      setState((prev) => ({
-        ...prev,
-        currentBooks,
-        offset: 0,
-        searchTerm: "",
-      }));
+      loadBooksAndStats(state.category, ""); // Load category if search cleared
     } else {
-      if (state.searchTerm) {
-        const currentBooks = filterAndPaginateBooks(
-          state.allBooks,
-          searchTerm,
-          0
-        );
-        setState((prev) => ({
-          ...prev,
-          currentBooks,
-          offset: 0,
-          searchTerm,
-        }));
-      } else {
-        loadBooks(state.category, searchTerm);
-      }
+      loadBooksAndStats(state.category, searchTerm.trim()); // Load search results
     }
   };
 
   // Initial load
   useEffect(() => {
-    loadBooks(state.category, state.searchTerm);
-  }, [state.category]);
+    loadBooksAndStats(state.category, state.searchTerm);
+  }, []);
 
   // Navigation handlers
-  const goToNextPage = () => {
+  const goToNextPage = async () => {
     if (state.isLoading) return;
-    const nextOffset = state.offset + BOOKS_PER_PAGE;
-    const totalFilteredBooks = state.searchTerm
-      ? state.allBooks.filter((book) =>
-          book.title.toLowerCase().includes(state.searchTerm.toLowerCase())
-        ).length
-      : state.allBooks.length;
 
-    if (nextOffset < totalFilteredBooks) {
-      const currentBooks = filterAndPaginateBooks(
-        state.allBooks,
-        state.searchTerm,
-        nextOffset
-      );
-      setState((prev) => ({
-        ...prev,
-        currentBooks,
-        offset: nextOffset,
-      }));
-      scrollToTop();
+    const nextOffset = state.offset + BOOKS_PER_PAGE;
+
+    if (state.searchTerm) {
+      if (nextOffset < state.totalBooksFound) {
+        setState((prev) => ({ ...prev, isLoading: true }));
+        const result = await fetchBooks(
+          "",
+          state.searchTerm,
+          BOOKS_PER_PAGE,
+          nextOffset
+        );
+        setState((prev) => ({
+          ...prev,
+          currentBooks: result.books,
+          offset: nextOffset,
+          isLoading: false,
+        }));
+        scrollToTop();
+      }
+    } else {
+      if (nextOffset < state.totalBooksFound) {
+        const currentBooks = filterAndPaginateBooks(state.allBooks, nextOffset);
+        setState((prev) => ({
+          ...prev,
+          currentBooks,
+          offset: nextOffset,
+        }));
+        scrollToTop();
+      }
     }
   };
 
-  const goToPreviousPage = () => {
+  const goToPreviousPage = async () => {
     if (state.isLoading || state.offset === 0) return;
+
     const prevOffset = state.offset - BOOKS_PER_PAGE;
-    const currentBooks = filterAndPaginateBooks(
-      state.allBooks,
-      state.searchTerm,
-      prevOffset
-    );
-    setState((prev) => ({
-      ...prev,
-      currentBooks,
-      offset: prevOffset,
-    }));
-    scrollToTop();
+
+    if (state.searchTerm) {
+      setState((prev) => ({ ...prev, isLoading: true }));
+      const result = await fetchBooks(
+        "",
+        state.searchTerm,
+        BOOKS_PER_PAGE,
+        prevOffset
+      );
+      setState((prev) => ({
+        ...prev,
+        currentBooks: result.books,
+        offset: prevOffset,
+        isLoading: false,
+      }));
+      scrollToTop();
+    } else {
+      const currentBooks = filterAndPaginateBooks(state.allBooks, prevOffset);
+      setState((prev) => ({
+        ...prev,
+        currentBooks,
+        offset: prevOffset,
+      }));
+      scrollToTop();
+    }
   };
 
   // Utility to scroll to top
@@ -305,7 +326,9 @@ function App() {
                   <Spinner />
                 ) : (
                   <>
-                    <Bookshelf items={state.statItems} shelfType="stats" />
+                    {state.statItems.length > 0 && (
+                      <Bookshelf items={state.statItems} shelfType="stats" />
+                    )}
                     {upperRowBooks.length > 0 && (
                       <Bookshelf items={upperRowBooks} shelfType="books" />
                     )}
@@ -316,7 +339,7 @@ function App() {
                       <p style={{ textAlign: "center", margin: "20px" }}>
                         {state.searchTerm
                           ? `No results found for "${state.searchTerm}".`
-                          : "No books to display on this page."}
+                          : "No books to display for this category."}
                       </p>
                     )}
                     <div className="pagination">
@@ -330,20 +353,22 @@ function App() {
                         onClick={goToNextPage}
                         disabled={
                           state.isLoading ||
-                          state.offset + BOOKS_PER_PAGE >=
-                            (state.searchTerm
-                              ? state.allBooks.filter((book) =>
-                                  book.title
-                                    .toLowerCase()
-                                    .includes(state.searchTerm.toLowerCase())
-                                ).length
-                              : state.allBooks.length)
+                          state.offset + BOOKS_PER_PAGE >= state.totalBooksFound
                         }
                       />
                     </div>
                   </>
                 )}
               </>
+            }
+          />
+          <Route
+            path="/award/:awardId"
+            element={
+              <AwardsPage
+                placeholderImage={PLACEHOLDER_IMAGE_URL}
+                fetchBooksFunction={fetchBooks}
+              />
             }
           />
           <Route
